@@ -27,7 +27,7 @@ struct LSM_APP_SERVICIO_SOCIALApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationView {
-                DiccionarioView(viewModel:   DiccionarioViewModel())
+                HomePageView()
             }
         }
     }

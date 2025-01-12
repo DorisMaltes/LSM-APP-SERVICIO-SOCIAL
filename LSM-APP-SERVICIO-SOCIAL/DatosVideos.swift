@@ -49,7 +49,7 @@ let lecciones = [
                     Video(id: "Apellido",nombre: "Apellido",ruta: "Videos/Leccion1/Personas/Apellido.mp4"),
                     Video(id: "El", nombre: "El", ruta: "Videos/Leccion1/Personas/El.mp4"),
                     Video(id: "Ellos",nombre: "Ellos",ruta: "Videos/Leccion1/Personas/Ellos.mp4"),
-                    Video( id: "Esposo_Casado",nombre: "Esposo Casado",ruta: "Videos/Leccion1/Personas/Esposo_Casado.mp4"),
+                    Video( id: "Esposo_Casado",nombre: "Esposo_Casado",ruta: "Videos/Leccion1/Personas/Esposo_Casado.mp4"),
                     Video( id: "Gente", nombre: "Gente", ruta: "Videos/Leccion1/Personas/Gente.mp4")
                 ]
             )

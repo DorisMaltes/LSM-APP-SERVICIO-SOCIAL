@@ -7,12 +7,31 @@
 
 import SwiftUI
 
+
 struct ListaDeCategoriasQuizView: View {
+    let leccion: Leccion
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            Text("Quizzes para la \(leccion.nombre)")
+                .font(.headline)
+                .padding()
+
+            List(leccion.categorias) { categoria in
+                NavigationLink("Quiz de \(categoria.nombre)",
+                               destination: QuizCategoriaView(categoria: categoria))
+            }
+        }
+        .navigationTitle(leccion.nombre)
     }
 }
 
-#Preview {
-    ListaDeCategoriasQuizView()
+
+struct ListaDeCategoriasQuizView_Previews: PreviewProvider {
+    static var previews: some View {
+        ListaDeCategoriasQuizView(
+            leccion: lecciones[0] // ejemplo
+        )
+    }
 }
+
