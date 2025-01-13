@@ -15,7 +15,7 @@ struct RutaAprendizajeView: View {
         NavigationStack {
             List (lecciones){ leccion in
                 NavigationLink(leccion.nombre, destination: ListaDeCategoriasView(leccion: leccion))
-            }.navigationTitle("Ruta Aprendizaje")
+            }.navigationTitle("Ruta Aprendizaje :)")
         }
     }
 }
