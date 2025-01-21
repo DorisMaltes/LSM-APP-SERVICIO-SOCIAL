@@ -4,6 +4,8 @@ import Vision
 import CoreML
 import UIKit
 
+//EN ESTE CODIGUIN ES DONDE SE AGREGA LA BIBLIOTECA DE MODELOS 🚩🚩🚩🚩🚩🚩🚩🚩 <--- si ves esta flag es donde hay que poner los nuevos modelos de las categorias
+
 // MARK: - PruebaEnVivoSheetView
 struct PruebaEnVivoSheetView: View {
     let videoName: String // Seña esperada
@@ -121,7 +123,7 @@ struct CameraSessionRepresentable: UIViewControllerRepresentable {
         arVC.categoryName = categoryName
         arVC.isCorrect = $isCorrect
         arVC.isIncorrect = $isIncorrect
-        arVC.detectionText = $detectionText  // <-- Nuevo
+        arVC.detectionText = $detectionText
         return arVC
     }
 
@@ -178,7 +180,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
         // 3. Configurar AR
         configureARSession()
 
-        // 4. Cargar modelo, MOVERLE AQUI PARA AGREGAR LOS DEMAS MODELOS!!!! 🗿
+        // 4. Cargar modelo, MOVERLE AQUI PARA AGREGAR LOS DEMAS MODELOS!!!! 🗿🚩
         do {
             let modelRegistry: [String: () throws -> MLModel] = [
                 "Personas": { try Personas(configuration: MLModelConfiguration()).model },
@@ -375,6 +377,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
 
 /// MLModelWrapper se encarga de unificar la firma de predicción(poses: [MLMultiArray]) -> (label, labelProb).
 /// Asume que tus modelos (Personas, Animales, etc.) generan la misma firma "public func prediction(poses: MLMultiArray)".
+//🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩
 class MLModelWrapper {
     private let mlModel: MLModel
 
@@ -399,7 +402,7 @@ class MLModelWrapper {
         else if let modeloAlfabeto = try? Alfabeto(model: self.mlModel) {
             let out = try modeloAlfabeto.prediction(poses: poses)
             return (out.label, out.labelProbabilities)
-        } //🗿AQUI TAMBIEN HAY QUE AGREGAR LAS OTRS
+        } //🚩AQUI TAMBIEN HAY QUE AGREGAR LAS OTRS
         // este es un ejemplo de como deberiamos poner los sigueintes modelos, solo hay 16 categorias entonces aqui deberia de haber 16 categorias:
         // else if let modeloAnimales = try? Animales(model: self.mlModel) {
         //     let out = try modeloAnimales.prediction(poses: poses)
