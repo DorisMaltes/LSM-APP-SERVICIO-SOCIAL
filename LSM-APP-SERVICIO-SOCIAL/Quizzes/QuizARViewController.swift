@@ -5,6 +5,8 @@
 //  Created by Doris Elena  on 12/01/25.
 //
 
+
+//EN ESTE CODIGUIN ES DONDE SE AGREGA LA BIBLIOTECA DE MODELOS 🚩🚩🚩🚩🚩🚩🚩🚩 <--- si ves esta flag es donde hay que poner los nuevos modelos de las categorias
 import UIKit
 import ARKit
 import Vision
@@ -13,174 +15,222 @@ import SwiftUI
 
 class QuizARViewController: UIViewController, ARSessionDelegate {
     
-    // Dato que esperamos
+    // 1) Datos recibidos
     var palabraEsperada: String = ""
-    // Callback
-    var onSignDetected: ((String, Double, Bool) -> Void)?
-    
-    private var arView: ARSCNView!
-    private var handActionModel: Personas!
+    var categoryName: String = ""
 
+    // 2) Binders
+    var isCorrect: Binding<Bool>? = nil
+    var isIncorrect: Binding<Bool>? = nil
+    var detectionText: Binding<String>? = nil
+    
+    // 3) Modelo unificado
+    private var handActionModel: MLModelWrapper!
+
+    // 4) Parámetros
     private let queueSize = 60
     private let queueSamplingCount = 55
     private let handPosePredictionInterval = 2
     private let handActionConfidenceThreshold: Double = 0.8
 
+    // 5) Colas
     private var queueLeft = [MLMultiArray]()
     private var queueRight = [MLMultiArray]()
-    
+
+    // contadores
     private var frameCounter = 0
     private var queueSamplingCounterLeft = 0
     private var queueSamplingCounterRight = 0
-    
-    private var detectionLabel: UILabel?
-    
+
+    // 6) ARSCNView
+    private var arView: ARSCNView!
+    private var rotateLabel: UILabel?
+
+    // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         arView = ARSCNView(frame: view.bounds)
         arView.session.delegate = self
         view.addSubview(arView)
-        
-        setupDetectionLabel()
+
+        setupRotateLabel()
         configureARSession()
-        
+
+        // Diccionario de modelos, aqui agregar todas!!! 🚩❣️
         do {
-            handActionModel = try Personas(configuration: MLModelConfiguration())
+            let modelRegistry: [String: () throws -> MLModel] = [
+                "Personas": { try Personas(configuration: MLModelConfiguration()).model },
+                "Alfabeto": { try Alfabeto(configuration: MLModelConfiguration()).model },
+                
+                // "Animales": { try Animales(configuration: MLModelConfiguration()).model },
+                // etc...
+            ]
+            if let constructor = modelRegistry[categoryName] {
+                let mlModel = try constructor()
+                handActionModel = MLModelWrapper(model: mlModel)
+            } else {
+                let fallbackModel = try Personas(configuration: MLModelConfiguration()).model
+                handActionModel = MLModelWrapper(model: fallbackModel)
+            }
         } catch {
-            fatalError("No se pudo cargar el modelo: \(error)")
+            fatalError("No se pudo cargar el modelo quiz para categoria \(categoryName): \(error)")
         }
+
+        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(orientationChanged),
+                                               name: UIDevice.orientationDidChangeNotification,
+                                               object: nil)
+        orientationChanged()
     }
 
-    private func setupDetectionLabel() {
-        let label = UILabel(frame: CGRect(x: 20, y: 60,
-                                          width: view.bounds.width - 40,
-                                          height: 40))
-        
-        label.textColor = .white
-        label.backgroundColor = UIColor.black.withAlphaComponent(0.6)
-        label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        label.text = "Esperando detecciones..."
-        
-        self.detectionLabel = label
-        view.addSubview(label)
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+        UIDevice.current.endGeneratingDeviceOrientationNotifications()
     }
 
     private func configureARSession() {
-        let configuration = ARFaceTrackingConfiguration()
-        arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+        let config = ARFaceTrackingConfiguration()
+        arView.session.run(config, options: [.resetTracking, .removeExistingAnchors])
     }
 
-    // MARK: - ARSessionDelegate
+    // MARK: - rotate label
+    private func setupRotateLabel() {
+        let rotate = UILabel()
+        rotate.numberOfLines = 2
+        rotate.textColor = .white
+        rotate.backgroundColor = UIColor.red.withAlphaComponent(0.7)
+        rotate.textAlignment = .center
+        rotate.font = .systemFont(ofSize: 16, weight: .bold)
+        rotate.text = "Por favor gira tu teléfono a horizontal (landscape)"
+        self.rotateLabel = rotate
+        view.addSubview(rotate)
+    }
+
+    @objc private func orientationChanged() {
+        let orientation = UIDevice.current.orientation
+        if orientation.isLandscape {
+            rotateLabel?.isHidden = true
+        } else if orientation.isPortrait {
+            rotateLabel?.isHidden = false
+        }
+        layoutLabels()
+    }
+
+    private func layoutLabels() {
+        guard let rl = rotateLabel else { return }
+        let rw: CGFloat = view.bounds.width - 40
+        let rh: CGFloat = 60
+        rl.frame = CGRect(x: 20, y: 60, width: rw, height: rh)
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        layoutLabels()
+    }
+
+    // MARK: - ARSessionDelegate => predicción
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         let pixelBuffer = frame.capturedImage
         
-        let handPoseRequest = VNDetectHumanHandPoseRequest()
-        handPoseRequest.maximumHandCount = 2
+        let request = VNDetectHumanHandPoseRequest()
+        request.maximumHandCount = 2
         
         let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, options: [:])
-        do {
-            try handler.perform([handPoseRequest])
-        } catch {
-            print("Fallo VNDetectHumanHandPoseRequest: \(error)")
+        do { try handler.perform([request]) } catch {
+            print("Error VNDetectHumanHandPoseRequest: \(error)")
             return
         }
 
-        guard let handPoses = handPoseRequest.results, !handPoses.isEmpty else { return }
-        
+        guard let handPoses = request.results, !handPoses.isEmpty else { return }
+
         frameCounter += 1
-        
         if frameCounter % handPosePredictionInterval == 0 {
-            var labelLeft: (label: String, conf: Double)?
-            var labelRight: (label: String, conf: Double)?
-            
-            for handObservation in handPoses {
-                guard let keypoints = try? handObservation.keypointsMultiArray() else { continue }
-                
-                if handObservation.chirality == .left {
+            var leftCandidate: (String, Double)? = nil
+            var rightCandidate: (String, Double)? = nil
+
+            for handObs in handPoses {
+                guard let keypoints = try? handObs.keypointsMultiArray() else { continue }
+
+                if handObs.chirality == .left {
                     queueLeft.append(keypoints)
                     queueLeft = Array(queueLeft.suffix(queueSize))
                     queueSamplingCounterLeft += 1
-                    
+
                     if queueLeft.count == queueSize && queueSamplingCounterLeft % queueSamplingCount == 0 {
                         do {
-                            let poses = MLMultiArray(concatenating: queueLeft, axis: 0, dataType: .float32)
-                            let pred = try handActionModel.prediction(poses: poses)
-                            
-                            let lb = pred.label
-                            if let cf = pred.labelProbabilities[lb], cf > handActionConfidenceThreshold {
-                                labelLeft = (lb, cf)
+                            let (label, probs) = try handActionModel.prediction(poses: queueLeft)
+                            if let conf = probs[label], conf > handActionConfidenceThreshold {
+                                leftCandidate = (label, conf)
                             }
                         } catch {
-                            print("Fallo prediccion mano izq: \(error)")
+                            print("Fallo prediccion izq: \(error)")
                         }
                     }
                 }
-                else if handObservation.chirality == .right {
+                else if handObs.chirality == .right {
                     queueRight.append(keypoints)
                     queueRight = Array(queueRight.suffix(queueSize))
                     queueSamplingCounterRight += 1
-                    
+
                     if queueRight.count == queueSize && queueSamplingCounterRight % queueSamplingCount == 0 {
                         do {
-                            let poses = MLMultiArray(concatenating: queueRight, axis: 0, dataType: .float32)
-                            let pred = try handActionModel.prediction(poses: poses)
-                            
-                            let lb = pred.label
-                            if let cf = pred.labelProbabilities[lb], cf > handActionConfidenceThreshold {
-                                labelRight = (lb, cf)
+                            let (label, probs) = try handActionModel.prediction(poses: queueRight)
+                            if let conf = probs[label], conf > handActionConfidenceThreshold {
+                                rightCandidate = (label, conf)
                             }
                         } catch {
-                            print("Fallo prediccion mano der: \(error)")
+                            print("Fallo prediccion der: \(error)")
                         }
                     }
                 }
-            } // fin for
+            }
             
-            // Decidir la seña final
-            if labelLeft != nil || labelRight != nil {
+            // Determinar la seña final
+            if leftCandidate != nil || rightCandidate != nil {
                 var finalLabel = ""
-                var finalConf = 0.0
-                
-                // 1) Si ambas manos coinciden
-                if let l = labelLeft, let r = labelRight, l.label == r.label {
-                    finalLabel = l.label
-                    finalConf = max(l.conf, r.conf)
-                }
-                // 2) Solo izquierda
-                else if let l = labelLeft, labelRight == nil {
-                    finalLabel = l.label
-                    finalConf = l.conf
-                }
-                // 3) Solo derecha
-                else if let r = labelRight, labelLeft == nil {
-                    finalLabel = r.label
-                    finalConf = r.conf
-                }
-                // 4) Ambas difieren => mayor confianza
-                else if let l = labelLeft, let r = labelRight {
-                    if l.conf >= r.conf {
-                        finalLabel = l.label
-                        finalConf = l.conf
+                var finalConf: Double = 0.0
+
+                if let l = leftCandidate, let r = rightCandidate, l.0 == r.0 {
+                    finalLabel = l.0
+                    finalConf = max(l.1, r.1)
+                } else if let l = leftCandidate, rightCandidate == nil {
+                    finalLabel = l.0
+                    finalConf = l.1
+                } else if let r = rightCandidate, leftCandidate == nil {
+                    finalLabel = r.0
+                    finalConf = r.1
+                } else if let l = leftCandidate, let r = rightCandidate {
+                    if l.1 >= r.1 {
+                        finalLabel = l.0
+                        finalConf = l.1
                     } else {
-                        finalLabel = r.label
-                        finalConf = r.conf
+                        finalLabel = r.0
+                        finalConf = r.1
                     }
                 }
-                
-                if !finalLabel.isEmpty {
-                    DispatchQueue.main.async {
-                        let confStr = String(format: "%.2f", finalConf * 100)
-                        self.detectionLabel?.text = "Seña: \(finalLabel) | \(confStr)%"
-                        
-                        // ¿Es correcto?
-                        let esCorrecto = (finalLabel == self.palabraEsperada)
-                        self.onSignDetected?(finalLabel, finalConf, esCorrecto)
+
+                DispatchQueue.main.async {
+                    guard !finalLabel.isEmpty else { return }
+
+                    let confPct = String(format: "%.2f", finalConf * 100)
+                    let newText = "Seña: \(finalLabel) | Conf: \(confPct)%"
+                    self.detectionText?.wrappedValue = newText
+
+                    if finalLabel == self.palabraEsperada {
+                        self.isCorrect?.wrappedValue = true
+                        self.isIncorrect?.wrappedValue = false
+                    } else {
+                        self.isCorrect?.wrappedValue = false
+                        self.isIncorrect?.wrappedValue = true
                     }
                 }
             }
         }
     }
 }
+
+
+
 
