@@ -1,9 +1,7 @@
 //
 //  HomePageView.swift
 //  LSM-APP-SERVICIO-SOCIAL
-//
-//  Created by Doris Elena  on 08/01/25.
-//
+
 
 import SwiftUI
 
@@ -11,25 +9,25 @@ import SwiftUI
 struct HomePageView: View {
     var body: some View {
         TabView {
-            // Home
+            // boton de home
             RutaAprendizajeView()
                 .tabItem {
                     Label("Home", systemImage: "house.fill")
                 }
 
-            // Diccionario
+            // diccionario
             DiccionarioView(viewModel: DiccionarioViewModel())
                 .tabItem {
                     Label("Diccionario", systemImage: "book.fill")
                 }
 
-            // Quizz
+            // quizz
             QuizzView()
                 .tabItem {
                     Label("Quizz", systemImage: "questionmark.circle.fill")
                 }
 
-            // Traductor
+            // traductor
             TraductorView()
                 .tabItem {
                     Label("Traductor", systemImage: "character.book.closed.fill")

@@ -64,6 +64,7 @@ struct AprenderCategoriaView: View {
         VStack {
             if currentIndex < categoria.videos.count {
                 let video = categoria.videos[currentIndex]
+                let categoryName: String
 
                 // Cargar el video dinámicamente
                 if let videoURL = videoURL {
@@ -109,8 +110,8 @@ struct AprenderCategoriaView: View {
                                                .cornerRadius(8)
                                        }
                                        .sheet(isPresented: $showSheet) {
-                                           // Pasamos video.nombre a la sheet
-                                           PruebaEnVivoSheetView(videoName: video.nombre)
+                                           // Pasamos video.nombre a la sheet y tambien categoryName
+                                           PruebaEnVivoSheetView(videoName: video.nombre, categoryName: categoria.nombre)
                                        }
 
                     Button(action: {

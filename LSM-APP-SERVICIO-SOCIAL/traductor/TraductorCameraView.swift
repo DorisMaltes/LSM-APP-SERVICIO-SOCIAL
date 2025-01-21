@@ -9,28 +9,48 @@ import SwiftUI
 
 /// Vista que envuelve al UIViewController (AR + CoreML) para el Traductor
 struct TraductorCameraView: View {
-    @Binding var candidatos: [String]
-    
-    var body: some View {
-        ZStack {
-            TraductorCameraRepresentable(candidatos: $candidatos)
-        }
-    }
-}
+    @Binding var frase: [String]
+    @Binding var lastDetectedSign: String?
+    @Binding var shouldStop: Bool
 
+        var body: some View {
+            TraductorCameraRepresentable(
+                frase: $frase,
+                lastDetectedSign: $lastDetectedSign,
+                shouldStop: $shouldStop
+            )
+        }
+}
 struct TraductorCameraRepresentable: UIViewControllerRepresentable {
-    @Binding var candidatos: [String]
-    
+    @Binding var frase: [String]
+    @Binding var lastDetectedSign: String?
+    @Binding var shouldStop: Bool
+
     func makeUIViewController(context: Context) -> TraductorARViewController {
         let vc = TraductorARViewController()
-        vc.candidatos = $candidatos // inyectamos el binding
+        vc.frase = $frase
+        vc.lastDetectedSign = $lastDetectedSign
+        vc.shouldStop = $shouldStop
         return vc
     }
-    
+
     func updateUIViewController(_ uiViewController: TraductorARViewController, context: Context) {}
 }
 
 
-#Preview {
-    TraductorCameraView(candidatos: .constant([]))
+struct TraductorCameraFullView: View {
+    @Binding var frase: [String]
+    @Binding var lastDetectedSign: String?
+    @Binding var shouldStop: Bool
+
+    var body: some View {
+        TraductorCameraRepresentable(
+            frase: $frase,
+            lastDetectedSign: $lastDetectedSign,
+            shouldStop: $shouldStop
+        )
+    }
 }
+
+
+

@@ -12,17 +12,21 @@ struct TraductorView: View {
     
     var body: some View {
         VStack {
-
             Button("¡Iniciar sesión de traducción!") {
                 showTranslatorSheet = true
             }
             .padding()
             .sheet(isPresented: $showTranslatorSheet) {
+                // Presentamos la nueva sheet
                 TraductorSheetView()
             }
         }
+        .background(Color.blue)
+        .foregroundColor(.white)
+        .cornerRadius(8)
     }
 }
+
 
 #Preview {
     TraductorView()

@@ -52,6 +52,39 @@ let lecciones = [
                     Video( id: "Esposo_Casado",nombre: "Esposo_Casado",ruta: "Videos/Leccion1/Personas/Esposo_Casado.mp4"),
                     Video( id: "Gente", nombre: "Gente", ruta: "Videos/Leccion1/Personas/Gente.mp4")
                 ]
+            ),
+            Categoria(
+                id:"alfabeto",
+                nombre: "Alfabeto",
+                videos: [
+                    Video(id: "a", nombre: "A", ruta: "Videos/Leccion1/Alfabeto/A.mp4"),
+                    Video(id: "B", nombre: "B", ruta: "Videos/Leccion1/Alfabeto/B.mp4"),
+                    Video(id: "C", nombre: "C", ruta: "Videos/Leccion1/Alfabeto/C.mp4"),
+                    Video(id: "D", nombre: "D", ruta: "Videos/Leccion1/Alfabeto/D.mp4"),
+                    Video(id: "E", nombre: "E", ruta: "Videos/Leccion1/Alfabeto/E.mp4"),
+                    Video(id: "F", nombre: "F", ruta: "Videos/Leccion1/Alfabeto/F.mp4"),
+                    Video(id: "G", nombre: "G", ruta: "Videos/Leccion1/Alfabeto/G.mp4"),
+                    Video(id: "H", nombre: "H", ruta: "Videos/Leccion1/Alfabeto/H.mp4"),
+                    Video(id: "I", nombre: "I", ruta: "Videos/Leccion1/Alfabeto/I.mp4"),
+                    Video(id: "j", nombre: "J", ruta: "Videos/Leccion1/Alfabeto/J.mp4"),
+                    Video(id: "k", nombre: "K", ruta: "Videos/Leccion1/Alfabeto/K.mp4"),
+                    Video(id: "L", nombre: "L", ruta: "Videos/Leccion1/Alfabeto/L.mp4"),
+                    Video(id: "LL", nombre: "LL", ruta: "Videos/Leccion1/Alfabeto/LL.mp4"),
+                    Video(id: "M", nombre: "M", ruta: "Videos/Leccion1/Alfabeto/M.mp4"),
+                    Video(id: "N", nombre: "N", ruta: "Videos/Leccion1/Alfabeto/N.mp4"),
+                    Video(id: "O", nombre: "O", ruta: "Videos/Leccion1/Alfabeto/O.mp4"),
+                    Video(id: "P", nombre: "P", ruta: "Videos/Leccion1/Alfabeto/P.mp4"),
+                    Video(id: "Q", nombre: "Q", ruta: "Videos/Leccion1/Alfabeto/Q.mp4"),
+                    Video(id: "R", nombre: "R", ruta: "Videos/Leccion1/Alfabeto/R.mp4"),
+                    Video(id: "S", nombre: "S", ruta: "Videos/Leccion1/Alfabeto/S.mp4"),
+                    Video(id: "T", nombre: "T", ruta: "Videos/Leccion1/Alfabeto/T.mp4"),
+                    Video(id: "U", nombre: "U", ruta: "Videos/Leccion1/Alfabeto/U.mp4"),
+                    Video(id: "V", nombre: "V", ruta: "Videos/Leccion1/Alfabeto/V.mp4"),
+                    Video(id: "W", nombre: "W", ruta: "Videos/Leccion1/Alfabeto/W.mp4"),
+                    Video(id: "X", nombre: "X", ruta: "Videos/Leccion1/Alfabeto/X.mp4"),
+                    Video(id: "Y", nombre: "Y", ruta: "Videos/Leccion1/Alfabeto/Y.mp4"),
+                    Video(id: "Z", nombre: "Z", ruta: "Videos/Leccion1/Alfabeto/Z.mp4")
+                ]
             )
         ]
     ),

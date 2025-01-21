@@ -43,7 +43,8 @@ struct QuizCategoriaView: View {
                     .cornerRadius(8)
                     .sheet(isPresented: $showQuizSheet) {
                         QuizPreguntaSheetView(
-                            palabraEsperada: video.nombre
+                            palabraEsperada: video.nombre,
+                            categoryName: categoria.nombre
                         ) { (señaDetectada, confidence, esCorrecto) in
                             results.append((
                                 pregunta: video.nombre,

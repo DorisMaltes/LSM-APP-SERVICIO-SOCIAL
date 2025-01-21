@@ -1,8 +1,14 @@
-import SwiftUI
+//
+//  TraductorSessionView.swift
+//  LSM-APP-SERVICIO-SOCIAL
+//
+//  Created by Doris Elena  on 20/01/25.
+//
 
 import SwiftUI
 
-struct TraductorSheetView: View {
+
+struct TraductorSessionView: View {
     @Environment(\.presentationMode) var presentationMode
     
     @State private var frase: [String] = []
@@ -76,10 +82,6 @@ struct TraductorSheetView: View {
 
 
 
-
-struct TraductorSheetView_Previews: PreviewProvider {
-    static var previews: some View {
-        TraductorSheetView()
-    }
+#Preview {
+    TraductorSessionView()
 }
-
