@@ -14,7 +14,7 @@ struct ResumenFraseSheetView: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            Text("Frase final:")
+            Text("Frase final: xddd")
                 .font(.headline)
 
             Text(frase.joined(separator: " "))
