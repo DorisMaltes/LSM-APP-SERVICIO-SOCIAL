@@ -7,7 +7,7 @@ import SwiftUI
 class TraductorARViewController: UIViewController, ARSessionDelegate {
 
     private var arView: ARSCNView!
-    private var handActionModel: Personas!
+    private var handActionModel: Personas! //🚩🚩 aqui cambiar al modelo universal lol
 
     private let queueSize = 60
     private let queueSamplingCount = 55

@@ -402,7 +402,8 @@ class MLModelWrapper {
         else if let modeloAlfabeto = try? Alfabeto(model: self.mlModel) {
             let out = try modeloAlfabeto.prediction(poses: poses)
             return (out.label, out.labelProbabilities)
-        } //🚩AQUI TAMBIEN HAY QUE AGREGAR LAS OTRS
+        }
+        //🚩AQUI TAMBIEN HAY QUE AGREGAR LAS OTRS
         // este es un ejemplo de como deberiamos poner los sigueintes modelos, solo hay 16 categorias entonces aqui deberia de haber 16 categorias:
         // else if let modeloAnimales = try? Animales(model: self.mlModel) {
         //     let out = try modeloAnimales.prediction(poses: poses)
