@@ -18,7 +18,7 @@ class TraductorARViewController: UIViewController, ARSessionDelegate {
     private var arView: ARSCNView!
     
     // MARK: - CoreML
-    private var handActionModel: PruebaPersonasCategoria2!
+    private var handActionModel: Personas!
     
     // MARK: - Parámetros
     private let queueSize = 60
@@ -58,7 +58,7 @@ class TraductorARViewController: UIViewController, ARSessionDelegate {
 
         // 4. Cargar modelo
         do {
-            handActionModel = try PruebaPersonasCategoria2(configuration: MLModelConfiguration())
+            handActionModel = try Personas(configuration: MLModelConfiguration())
         } catch {
             fatalError("No se pudo cargar el modelo: \(error)")
         }

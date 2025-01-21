@@ -19,7 +19,7 @@ class QuizARViewController: UIViewController, ARSessionDelegate {
     var onSignDetected: ((String, Double, Bool) -> Void)?
     
     private var arView: ARSCNView!
-    private var handActionModel: PruebaPersonasCategoria2!
+    private var handActionModel: Personas!
 
     private let queueSize = 60
     private let queueSamplingCount = 55
@@ -46,7 +46,7 @@ class QuizARViewController: UIViewController, ARSessionDelegate {
         configureARSession()
         
         do {
-            handActionModel = try PruebaPersonasCategoria2(configuration: MLModelConfiguration())
+            handActionModel = try Personas(configuration: MLModelConfiguration())
         } catch {
             fatalError("No se pudo cargar el modelo: \(error)")
         }
